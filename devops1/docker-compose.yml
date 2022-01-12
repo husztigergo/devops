@@ -1,0 +1,31 @@
+version: '3.3'
+services:
+
+    mysql-test:
+        environment:
+            - MYSQL_ROOT_PASSWORD=secret
+        ports:
+            - '3306:3306'
+        container_name: mysql-test
+        image: mentorembeddeddevops/mysql-test
+        network_mode: devops
+
+    api-test:
+        ports:
+            - '80:5000'
+        depends_on:
+          - mysql-test
+        container_name: api-test
+        image: mentorembeddeddevops/rest-api-test
+        network_mode: devops
+
+    python-test:
+        volumes:
+          - .:/app
+        depends_on:
+          - mysql-test
+          - api-test
+        build:
+          context: .
+        container_name: python-test
+        network_mode: devops
